@@ -1,5 +1,4 @@
 {
-  "//": "Vercel configuration for SelfiStar (Vite SPA + Express API)",
   "buildCommand": "pnpm install && pnpm build",
   "outputDirectory": "dist/spa",
   "routes": [
@@ -16,4 +15,3 @@
     }
   ]
 }
-
