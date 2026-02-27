@@ -1,0 +1,148 @@
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Star, Loader } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useState, useEffect } from "react";
+import VideoBackground from "@/components/VideoBackground";
+
+export default function Login() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { login, isLoading, user, isAuthenticated } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  // Redirect after successful login
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      const params = new URLSearchParams(location.search);
+      const inviteCode = params.get("inviteCode");
+
+      if (inviteCode) {
+        // After login, automatically accept pending invite
+        navigate(`/challenge/invite/${inviteCode}`, { replace: true });
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
+    }
+  }, [isAuthenticated, user, navigate, location.search]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    if (!email || !password) {
+      setError("Please fill in all fields");
+      return;
+    }
+
+    try {
+      await login(email, password);
+      // The useEffect will handle the redirect after user state updates
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Login failed. Please try again.");
+      console.error(err);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4 relative">
+      <VideoBackground />
+
+      <div className="w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-white/20 border border-white/30 mx-auto mb-4">
+            <Star className="h-7 w-7 fill-white text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-2">
+            SelfiStar
+          </h1>
+          <p className="text-muted-foreground">Welcome back, Star!</p>
+        </div>
+
+        {/* Login Form */}
+        <div className="p-8 rounded-xl border border-neon-purple/30 bg-card/80 backdrop-blur-sm">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {error && (
+              <div className="p-3 rounded-lg bg-destructive/20 border border-destructive/40 text-destructive text-sm">
+                {error}
+              </div>
+            )}
+
+            <div>
+              <label className="text-sm font-medium mb-2 block">Email</label>
+              <Input
+                type="email"
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
+                className="bg-input border-border/40 focus:border-neon-purple/60"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block">Password</label>
+              <Input
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+                className="bg-input border-border/40 focus:border-neon-purple/60"
+              />
+            </div>
+
+            <div className="flex items-center justify-between text-sm">
+              <label className="flex items-center gap-2">
+                <input type="checkbox" className="rounded border-border/40" disabled={isLoading} />
+                <span>Remember me</span>
+              </label>
+              <a href="#" className="text-neon-purple hover:text-neon-purple/80">
+                Forgot password?
+              </a>
+            </div>
+
+            <div className="rounded-lg border border-neon-cyan/30 bg-neon-cyan/5 p-3 text-xs text-muted-foreground">
+              <strong>Note:</strong> Login to access your dashboard and start uploading selfies.
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-white text-black hover:bg-white/90 border border-white/30 py-2 text-base disabled:opacity-50"
+            >
+              {isLoading ? (
+                <>
+                  <Loader className="mr-2 h-4 w-4 animate-spin" />
+                  Signing In...
+                </>
+              ) : (
+                "Sign In"
+              )}
+            </Button>
+          </form>
+
+          <div className="mt-6 pt-6 border-t border-border/40 text-center">
+            <p className="text-muted-foreground text-sm">
+              Not a Star yet?{" "}
+              <Link to="/register" className="text-neon-purple hover:text-neon-purple/80 font-medium">
+                Create account
+              </Link>
+            </p>
+          </div>
+        </div>
+
+        {/* Back Home */}
+        <div className="text-center mt-6">
+          <Link to="/" className="text-muted-foreground hover:text-foreground text-sm">
+            ← Back to home
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
