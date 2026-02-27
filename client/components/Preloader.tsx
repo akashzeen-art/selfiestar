@@ -1,0 +1,130 @@
+import { useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
+
+const PRELOADER_DURATION_MS = 5000;
+const MOBILE_BREAKPOINT = 768;
+
+const DESKTOP_VIDEO = "/desktopbgvideo.mp4";
+const MOBILE_VIDEO = "/mobilebgvideo.mp4";
+
+interface PreloaderProps {
+  onComplete: () => void;
+  durationMs?: number;
+  className?: string;
+}
+
+export default function Preloader({
+  onComplete,
+  durationMs = PRELOADER_DURATION_MS,
+  className,
+}: PreloaderProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < MOBILE_BREAKPOINT : false
+  );
+  const [isExiting, setIsExiting] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  // Desktop vs mobile video based on viewport
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Play video when source is set
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.play().catch(() => {
+      // Autoplay may be blocked; video will still show first frame
+    });
+  }, [isMobile]);
+
+  // 5 second timer then fade out and complete
+  useEffect(() => {
+    const startExitTimer = setTimeout(() => setIsExiting(true), durationMs);
+    const completeTimer = setTimeout(onComplete, durationMs + 400);
+    return () => {
+      clearTimeout(startExitTimer);
+      clearTimeout(completeTimer);
+    };
+  }, [durationMs, onComplete]);
+
+  // Loading progress percentage synced with duration
+  useEffect(() => {
+    let frameId: number;
+    const start = performance.now();
+
+    const tick = () => {
+      const elapsed = performance.now() - start;
+      const ratio = Math.min(1, elapsed / durationMs);
+      setProgress(Math.round(ratio * 100));
+      if (ratio < 1) {
+        frameId = requestAnimationFrame(tick);
+      }
+    };
+
+    frameId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frameId);
+  }, [durationMs]);
+
+  return (
+    <div
+      className={cn(
+        "fixed inset-0 z-[9999] flex items-center justify-center bg-black transition-opacity duration-[400ms]",
+        isExiting && "opacity-0 pointer-events-none",
+        className
+      )}
+      aria-hidden="true"
+    >
+      <video
+        ref={videoRef}
+        className="absolute inset-0 h-full w-full object-cover"
+        playsInline
+        muted
+        loop
+        preload="auto"
+        aria-label="Loading"
+      >
+        <source
+          src={isMobile ? MOBILE_VIDEO : DESKTOP_VIDEO}
+          type="video/mp4"
+        />
+      </video>
+      {/* Dark overlay for readability */}
+      <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+
+      {/* Centered logo, welcome text and loading bar */}
+      <div className="relative z-10 flex flex-col items-center gap-4 px-6 text-center text-white">
+        {/* Logo (text-based for now) */}
+        <div className="flex items-center justify-center rounded-full border border-white/40 bg-white/10 px-6 py-2 backdrop-blur-sm">
+          <span className="text-lg font-semibold tracking-[0.2em]">
+            SELFIE STAR
+          </span>
+        </div>
+
+        {/* Welcome text */}
+        <p className="text-sm md:text-base text-white/80 uppercase tracking-[0.15em]">
+          welcome to Selfie Star
+        </p>
+
+        {/* Loading bar + percentage */}
+        <div className="mt-2 w-56 md:w-72 space-y-1">
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/20">
+            <div
+              className="h-full rounded-full bg-white transition-[width] duration-100 ease-linear"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <div className="text-xs md:text-sm text-white/70">
+            Loading {progress}%
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

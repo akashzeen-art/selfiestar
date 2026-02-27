@@ -1,5 +1,6 @@
 import "./global.css";
 
+import { useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -8,6 +9,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { SelfieProvider } from "./contexts/SelfieContext";
+import Preloader from "@/components/Preloader";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -25,14 +27,21 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <AuthProvider>
-        <SelfieProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter
+const App = () => {
+  const [showPreloader, setShowPreloader] = useState(true);
+
+  return (
+    <>
+      {showPreloader && (
+        <Preloader onComplete={() => setShowPreloader(false)} />
+      )}
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <AuthProvider>
+            <SelfieProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter
             future={{
               v7_startTransition: true,
               v7_relativeSplatPath: true,
@@ -118,6 +127,8 @@ const App = () => (
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
-);
+    </>
+  );
+};
 
 createRoot(document.getElementById("root")!).render(<App />);
