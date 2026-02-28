@@ -1,5 +1,6 @@
 {
-  "buildCommand": "pnpm install && pnpm build",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm run build:client",
   "outputDirectory": "dist/spa",
   "routes": [
     {
