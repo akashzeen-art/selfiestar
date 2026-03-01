@@ -47,7 +47,7 @@ export default function Preloader({
   // 5 second timer then fade out and complete
   useEffect(() => {
     const startExitTimer = setTimeout(() => setIsExiting(true), durationMs);
-    const completeTimer = setTimeout(onComplete, durationMs + 400);
+    const completeTimer = setTimeout(onComplete, durationMs + 300);
     return () => {
       clearTimeout(startExitTimer);
       clearTimeout(completeTimer);
@@ -75,7 +75,7 @@ export default function Preloader({
   return (
     <div
       className={cn(
-        "fixed inset-0 z-[9999] flex items-center justify-center bg-black transition-opacity duration-[400ms]",
+        "fixed inset-0 z-[9999] flex items-center justify-center bg-black transition-opacity duration-300",
         isExiting && "opacity-0 pointer-events-none",
         className
       )}
