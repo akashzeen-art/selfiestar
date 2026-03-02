@@ -3,7 +3,7 @@
 **GitHub:** https://github.com/akashzeen-art/selfiestar  
 **Vercel dashboard:** https://vercel.com/akashzeen-1520s-projects  
 
-**Note:** The Express API is **disabled** on Vercel (folder renamed to `api-express`) so the deployment can finish. The build was hanging when packaging the full server. You get the **frontend only**; to have login/challenges/selfies work, either re-enable the API (see `api-express/README.md`) or host the API on Railway/Render and point the app to it.
+**Note:** The `api` folder is **removed** on Vercel so the deploy finishes (no serverless function = no hang). You get **frontend only**. For login/challenges/selfies, re-enable the API (see `api-express/README.md`) or host the API on Railway/Render.
 
 ---
 
