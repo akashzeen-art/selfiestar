@@ -1,29 +1,16 @@
-# Netlify Configuration
-# Optimized for Node.js + Express deployment
+# Netlify Configuration – SelfiStar (Vite SPA)
 
 [build]
-  command = "pnpm build"
+  command = "pnpm run build:client"
   publish = "dist/spa"
 
 [build.environment]
   NODE_VERSION = "20"
-  NPM_FLAGS = "--prefix=server"
 
-# Serverless Functions (if using Netlify Functions)
-# [functions]
-#   directory = "netlify/functions"
-
-# Redirects - SPA routing
+# SPA routing – all routes serve index.html (no conditions)
 [[redirects]]
   from = "/*"
   to = "/index.html"
-  status = 200
-  conditions = {Role = ["admin"], Country = ["US"]}
-
-# API proxy (if needed)
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/server/:splat"
   status = 200
 
 # Security headers

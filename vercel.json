@@ -3,6 +3,12 @@
   "installCommand": "pnpm install",
   "buildCommand": "pnpm run build:client",
   "outputDirectory": "dist/spa",
+  "functions": {
+    "api/**/*.ts": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  },
   "routes": [
     { "handle": "filesystem" },
     { "src": "/api/(.*)", "dest": "/api/$1" },

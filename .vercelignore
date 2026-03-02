@@ -1,4 +1,4 @@
-# Exclude from deployment (Vercel runs install + build anyway)
+# Exclude from deployment (smaller upload = faster deploy, avoids stuck deployment)
 node_modules
 dist
 .git
@@ -6,3 +6,6 @@ dist
 .env
 .env.*
 .DS_Store
+# Unused large videos (preloader only needs desktopbgvideo + mobilebgvideo)
+public/2.mp4
+public/background-video.mp4
