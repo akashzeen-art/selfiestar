@@ -3,9 +3,12 @@ import axios, { AxiosInstance, AxiosError } from "axios";
 /**
  * Axios instance for API calls
  * Includes JWT token management and error handling
+ * Set VITE_API_URL (e.g. https://your-api.railway.app/api) when API is hosted separately (e.g. Vercel frontend + Railway API).
  */
-
-const API_BASE = "/api";
+const API_BASE =
+  typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL
+    ? String(import.meta.env.VITE_API_URL).replace(/\/$/, "")
+    : "/api";
 const TOKEN_KEY = "selfistar_token";
 
 // Create axios instance

@@ -1,0 +1,9 @@
+node_modules
+dist
+.git
+*.log
+.env
+.env.*
+.DS_Store
+public/2.mp4
+public/background-video.mp4

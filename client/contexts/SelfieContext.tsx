@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 import { apiClient } from "@/lib/axios";
+import { mediaUrlFromToken } from "@/lib/api";
 import { SelfieDto } from "@shared/api";
 
 export interface UserSelfie {
@@ -34,7 +35,7 @@ export function SelfieProvider({ children }: { children: React.ReactNode }) {
 
   const toUserSelfie = (selfie: any): UserSelfie => ({
     id: selfie.id,
-    image: selfie.imageUrl || (selfie.mediaToken ? `/api/selfies/access/${selfie.mediaToken}` : ""),
+    image: selfie.imageUrl || (selfie.mediaToken ? mediaUrlFromToken(selfie.mediaToken) : ""),
     score: selfie.score,
     caption: selfie.caption,
     isPublic: selfie.isPublic,

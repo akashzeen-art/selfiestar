@@ -1,5 +1,13 @@
-const API_BASE = "/api";
+/** When API is on another host (e.g. Railway), set VITE_API_URL to that base including /api (e.g. https://xxx.railway.app/api). */
+const API_BASE =
+  typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL
+    ? String(import.meta.env.VITE_API_URL).replace(/\/$/, "")
+    : "/api";
 const TOKEN_KEY = "selfistar_token";
+
+export function getApiBase() {
+  return API_BASE;
+}
 
 export function getStoredToken() {
   return localStorage.getItem(TOKEN_KEY);
